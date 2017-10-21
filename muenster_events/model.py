@@ -1,6 +1,7 @@
 """Model functions for storing scraped event data."""
 
 import sqlite3
+import pandas as pd
 
 
 def get_database_connection():
@@ -50,4 +51,19 @@ def add_event_ids_to_db(new_event_ids):
         if int(new_event) not in db_event_ids:
             c.execute('INSERT INTO event_ids (id) VALUES (?);', (new_event,))
     conn.commit()
+    conn.close()
+
+
+def read_events_df():
+    """Read db table 'events' as pandas dataframe."""
+    conn = get_database_connection()
+    events_df = pd.read_sql(sql="SELECT * FROM events", con=conn)
+    conn.close()
+    return events_df
+
+
+def write_events_df(events_df):
+    """Write pandas dataframe to 'events' table."""
+    conn = get_database_connection()
+    events_df.to_sql(name='events', con=conn, if_exists='replace', index=False)
     conn.close()

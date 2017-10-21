@@ -1,7 +1,6 @@
 """Controlls the active scraping."""
 
 from muenster_events import model, scraper
-import pandas as pd
 from time import sleep
 
 # initialize database
@@ -15,9 +14,9 @@ model.add_event_ids_to_db(all_event_ids)
 # scrape individual events
 all_event_ids = model.get_event_ids()
 # read events from DB
-conn = model.get_database_connection()
-events_df = pd.read_sql(sql="SELECT * FROM events", con=conn)
-print('events not crawled: ' +
+events_df = model.read_events_df()
+
+print('new events not crawled: ' +
       str(len(all_event_ids) - len(events_df['id'].tolist())))
 
 # crawl 3 new events
@@ -36,5 +35,4 @@ for event_id in all_event_ids:
         sleep(5)
 
 # write dataframe to db
-events_df.to_sql(name='events', con=conn, if_exists='replace', index=False)
-conn.close()
+model.write_events_df(events_df)
