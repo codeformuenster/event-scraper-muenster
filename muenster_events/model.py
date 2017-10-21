@@ -6,7 +6,7 @@ import pandas as pd
 
 def get_database_connection():
     """Get connection string to database."""
-    return sqlite3.connect("data/events.db")
+    return sqlite3.connect("../data/events.db")
 
 
 def execute_query(query_string):

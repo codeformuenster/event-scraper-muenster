@@ -1,6 +1,7 @@
 """Controlls the active scraping."""
 
-from muenster_events import model, scraper
+import model
+import scraper
 from time import sleep
 
 # initialize database
