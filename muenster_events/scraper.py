@@ -33,19 +33,22 @@ def get_events_from_results(source):
 def get_source_for_event(event):
     """Get html source for event_id."""
     resp = requests.get("https://www.muenster.de/veranstaltungskalender/scr" +
-                        "ipts/frontend/mm2/veranstaltung.php?id=" + event)
+                        "ipts/frontend/mm2/veranstaltung.php?id=" + str(event))
     content = resp.content
-    return content
+    content_utf8 = content.decode('utf-8')
+    return content_utf8
 
 
-def event_source_to_dict(event_source):
+def event_source_to_dict(event_id, event_source):
     """Extract event properties from source and store in dictionary."""
+    event_source = re.sub('<br />', ' ', event_source)
     soup = BeautifulSoup(event_source, 'html.parser')
     event_dict = {}
     event_dict['title'] = soup.find("div", class_="titel")
     event_dict['subtitle'] = soup.find("div", class_="untertitel")
     event_dict['time'] = soup.find("div", class_="datum-uhrzeit")
     event_dict['address'] = soup.find("div", class_="location-adresse")
+    event_dict['location'] = soup.find("div", class_="location")
     event_dict['details'] = soup.find("div", class_="detailbeschreibung")
     event_dict['link'] = soup.find('a', class_='extern')
     # get stripped content from html tag
@@ -54,11 +57,6 @@ def event_source_to_dict(event_source):
             event_dict[key] = event_dict[key].contents[0].strip()
         else:
             event_dict[key] = ""
+    # add id from parameter
+    event_dict['id'] = event_id
     return event_dict
-
-
-source = get_result_source()
-events = get_events_from_results(source)
-event_source = get_source_for_event(events[1])
-event_dict = event_source_to_dict(event_source)
-event_dict
