@@ -1,2 +1,3 @@
 # event-scraper-muenster
-scraping events from muenster.de
+
+Scraping and classifying events in Münster.
